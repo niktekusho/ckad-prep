@@ -1,0 +1,51 @@
+:root {
+  --bg: #fffff8; --fg: #1d1d1b; --muted: #6b6b63; --rule: #ddd9cc;
+  --code-bg: #f3f1e7; --accent: #2f5d8a; --ok: #2e7d32; --bad: #b3261e;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161614; --fg: #e8e6dc; --muted: #9a978b; --rule: #3a3833;
+    --code-bg: #22211e; --accent: #8db4dc; --ok: #81c784; --bad: #ef9a9a;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 19px/1.6 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+}
+main { max-width: 42rem; margin: 0 auto; padding: 3rem 16px 5rem; }
+h1 { font-weight: 400; font-size: 2.1rem; line-height: 1.2; margin: 0 0 .3rem; }
+h2 { font-weight: 400; font-style: italic; font-size: 1.45rem; margin: 2.6rem 0 .6rem; }
+.subtitle { color: var(--muted); font-style: italic; margin: 0 0 2rem; }
+a { color: var(--accent); }
+code, pre { font: 15px/1.5 "Cascadia Mono", Consolas, Menlo, monospace; }
+code { background: var(--code-bg); padding: .05em .3em; border-radius: 3px; }
+pre { background: var(--code-bg); padding: .8rem 1rem; overflow-x: auto; border-radius: 4px; }
+pre code { background: none; padding: 0; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; margin: 1rem 0; }
+th, td { text-align: left; vertical-align: top; padding: .35rem .5rem; border-bottom: 1px solid var(--rule); }
+th { font-weight: 600; }
+td code { white-space: nowrap; }
+.table-wrap { overflow-x: auto; }
+.note { color: var(--muted); font-size: .9rem; }
+.callout { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: .4rem 0; margin: 2rem 0; }
+nav.course { font-size: .9rem; color: var(--muted); border-top: 1px solid var(--rule); margin-top: 3rem; padding-top: 1rem; }
+
+.quiz { border: 1px solid var(--rule); border-radius: 6px; padding: 1rem 1.2rem; margin: 1.2rem 0; }
+.quiz p:first-child { margin-top: 0; }
+.quiz button {
+  display: block; width: 100%; text-align: left; margin: .4rem 0; padding: .5rem .7rem;
+  background: var(--code-bg); color: var(--fg); border: 1px solid var(--rule); border-radius: 4px;
+  font: 15px/1.4 "Cascadia Mono", Consolas, Menlo, monospace; cursor: pointer;
+}
+.quiz button.right { border-color: var(--ok); color: var(--ok); }
+.quiz button.wrong { border-color: var(--bad); color: var(--bad); text-decoration: line-through; }
+.quiz .feedback { min-height: 1.4em; font-size: .95rem; margin-bottom: 0; }
+
+@media print {
+  body { background: #fff; color: #000; font-size: 11pt; }
+  main { max-width: none; padding: 0; }
+  a { color: #000; }
+  nav.course, .quiz button { display: none; }
+  pre, table { break-inside: avoid; }
+}

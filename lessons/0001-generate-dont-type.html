@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generate, don't type</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+<h1>Generate, don't type</h1>
+<p class="subtitle">Lesson 1 of your CKAD prep. About 15 minutes, then the diagnostic.</p>
+
+<p>The exam gives you 2 hours for 15 to 20 hands-on tasks (<a href="https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad">LF exam tips</a>). That is 6 to 8 minutes per task. Typing a manifest from memory costs most of that budget and adds indentation errors. Have <code>kubectl</code> write the YAML skeleton, then add only the fields it can't generate.</p>
+
+<h2>1. Set up your shell once</h2>
+<p>Add this to <code>~/.bashrc</code> in Git Bash, then open a new terminal:</p>
+<pre><code>alias k=kubectl
+source &lt;(kubectl completion bash)
+complete -o default -F __start_kubectl k
+export do="--dry-run=client -o yaml"
+export MSYS_NO_PATHCONV=1</code></pre>
+<p>The exam terminal already has the <code>k</code> alias and completion (<a href="https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad">LF exam tips</a>). The alias and completion lines come from the <a href="https://kubernetes.io/docs/reference/kubectl/quick-reference/">kubectl quick reference</a>, which is an allowed docs page. On exam day, type only the <code>export do=...</code> line.</p>
+<p>The last line only matters on Windows. Without it, Git Bash rewrites arguments such as <code>/etc/db</code> into <code>C:/Program Files/Git/etc/db</code>, and commands like <code>k exec pod -- cat /etc/db/user</code> fail.</p>
+<p>Add this line to <code>~/.vimrc</code> so a Tab in YAML becomes two spaces:</p>
+<pre><code>set expandtab tabstop=2 shiftwidth=2</code></pre>
+
+<h2>2. The loop</h2>
+<pre><code>k create deploy web --image=nginx:1.27 --replicas=3 $do &gt; web.yaml
+vim web.yaml          # add the fields kubectl can't generate
+k apply -f web.yaml</code></pre>
+<p><code>--dry-run=client</code> builds the object without sending it to the cluster. <code>-o yaml</code> prints it. For a field you can't remember, ask the API directly instead of searching:</p>
+<pre><code>k explain pod.spec.containers.securityContext
+k explain deploy.spec.strategy.rollingUpdate</code></pre>
+<p>For whole blocks (probes, volumes, NetworkPolicies), copy the example from the <a href="https://kubernetes.io/docs/tasks/">kubernetes.io Tasks pages</a>. The <a href="../reference/kubectl-generators.html">generator reference</a> lists which command creates which object.</p>
+
+<h2>3. Check yourself</h2>
+<div class="quiz" data-answer="2" data-explain="create builds it, $do turns that into a dry run that prints YAML.">
+<p>Which command prints a Deployment manifest without creating anything?</p>
+<button>k create deploy web --image=nginx -o yaml</button>
+<button>k apply deploy web --image=nginx $do</button>
+<button>k create deploy web --image=nginx $do</button>
+<button>k run deploy web --image=nginx $do</button>
+</div>
+
+<div class="quiz" data-answer="1" data-explain="Probes have no create flag. Add them in vim or copy them from the docs.">
+<p>Which part of a Deployment can't <code>k create deploy</code> set from a flag?</p>
+<button>spec.replicas</button>
+<button>readinessProbe</button>
+<button>containerPort</button>
+<button>image</button>
+</div>
+
+<div class="quiz" data-answer="3" data-explain="explain reads the field docs from the cluster's API schema.">
+<p>Which command lists the fields allowed under a container's securityContext?</p>
+<button>k describe pod.spec.containers.securityContext</button>
+<button>k get pod -o jsonpath=securityContext</button>
+<button>k api-resources --output securityContext</button>
+<button>k explain pod.spec.containers.securityContext</button>
+</div>
+
+<h2>4. Your first win: the diagnostic</h2>
+<p>Run the 11-task diagnostic from the repo root in Git Bash. It covers every domain except Helm and Kustomize, with about 65 minutes of budget in total. Each task gets its own namespace, so use <code>-n &lt;task&gt;</code> or switch with <code>k config set-context --current --namespace=&lt;task&gt;</code>.</p>
+<pre><code>./drill run diag-01</code></pre>
+<p>Press Enter to check a task. Failed lines show what the cluster has now. Skip any task that stalls you for more than twice its budget. The runner logs your time and result to <code>progress/log.csv</code>, and <code>./drill stats</code> shows pass rate and time per domain. The next session targets whatever comes out weakest.</p>
+
+<div class="callout">
+<p><strong>Primary source.</strong> Read the <a href="https://kubernetes.io/docs/reference/kubectl/quick-reference/">kubectl quick reference</a> once, end to end. Every command in it works on the exam.</p>
+<p>Ask me follow-up questions about anything here, or about any task you failed. I'm your teacher for this, and reviewing failures with me is the fastest part of the loop.</p>
+</div>
+
+<nav class="course">
+Next lesson: chosen from your diagnostic results.
+&middot; Reference: <a href="../reference/kubectl-generators.html">kubectl generators</a>
+</nav>
+</main>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+# Diagnostic: every domain except Helm and Kustomize (those come in session 2). About 65 minutes of budget.
+cronjob-basic
+native-sidecar
+rolling-update
+canary-split
+probes
+debug-deploy
+config-env
+pod-security
+svc-fix
+netpol-ingress
+ingress-paths
