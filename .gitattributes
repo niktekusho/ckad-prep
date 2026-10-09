@@ -2,3 +2,4 @@
 drill text eol=lf
 *.txt text eol=lf
 *.md text eol=lf
+*.csv text eol=lf
