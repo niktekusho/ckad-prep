@@ -1,5 +1,4 @@
 # Sourced by every check.sh. NS is the task namespace.
-export MSYS_NO_PATHCONV=1
 fail=0
 kc() { kubectl -n "$NS" "$@" 2>/dev/null | tr -d '\r'; }
 jp() { kc get "$1" -o jsonpath="$2"; }

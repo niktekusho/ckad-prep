@@ -7,8 +7,8 @@
 
 ## Environment (this machine)
 - Docker Desktop 4.32, kubeadm provisioner, Kubernetes v1.29.2, single node. No admin rights, so no upgrade.
-- Git Bash. Needs `export MSYS_NO_PATHCONV=1`, or Git Bash rewrites `/etc/...` arguments into Windows paths.
-- helm v3.15 is installed. Kustomize is built into kubectl (`kubectl apply -k`).
+- WSL (kubectl v1.31 client). It shares the Windows kubeconfig, which also holds work clusters (OpenShift, GKE prod). `drill` checks for the `docker-desktop` context.
+- helm is not installed in WSL yet (needed for session 2). Kustomize is built into kubectl (`kubectl apply -k`).
 - No ingress controller and no NetworkPolicy enforcement. Tasks check the object spec only.
 - Avoid features newer than v1.29 in local tasks. Mention them in lessons when the exam (v1.37) differs.
 

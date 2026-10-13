@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # CKAD drill runner. Usage: ./drill run <set> | ./drill mock <set> | ./drill stats | ./drill reset
 set -u
-export MSYS_NO_PATHCONV=1
 ROOT=$(cd "$(dirname "$0")" && pwd)
 LOG=$ROOT/progress/log.csv
 mkdir -p "$ROOT/progress"; [ -f "$LOG" ] || echo "date,mode,set,task,domain,budget_min,secs,result" > "$LOG"
@@ -12,6 +11,13 @@ ids()   { grep -v '^#' "$ROOT/sets/$1.txt" | tr -d '\r' | grep .; }
 log()   { echo "$(date +%F),$1,$2,$3,$(field "$3" domain),$(field "$3" budget),$4,$5" >> "$LOG"; }
 ask()   { read -rp "$1" REPLY; }
 check() { NS=$1 bash "$ROOT/tasks/$1/check.sh"; }
+
+# drill deletes namespaces, so it must never touch a real cluster.
+local_only() {
+  ctx=$(kubectl config current-context 2>/dev/null)
+  [ "$ctx" = docker-desktop ] && return
+  echo "kubectl points at '$ctx', not docker-desktop. Run: kubectl config use-context docker-desktop" >&2; exit 1
+}
 
 # Each task gets a fresh namespace named after the task.
 prep() {
@@ -70,8 +76,8 @@ stats() {
 }
 
 case ${1:-} in
-  run|mock) "$1" "$2" ;;
+  run|mock) local_only; "$1" "$2" ;;
   stats) stats ;;
-  reset) kubectl delete ns -l ckad-drill=1 ;;
+  reset) local_only; kubectl delete ns -l ckad-drill=1 ;;
   *) sed -n '2p' "$0" ;;
 esac
