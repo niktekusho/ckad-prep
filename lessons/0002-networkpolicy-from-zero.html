@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NetworkPolicy from zero</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+<h1>NetworkPolicy from zero</h1>
+<p class="subtitle">Lesson 2 of your CKAD prep. About 10 minutes, then retry the two tasks diag-01 missed.</p>
+
+<h2>1. The one idea</h2>
+<p>By default every Pod accepts traffic from every other Pod. A NetworkPolicy changes that for the Pods it <em>selects</em>. Once a policy selects a Pod for incoming traffic, the Pod accepts only what some rule allows and drops everything else. Pods that no policy selects stay open.</p>
+<p>So a NetworkPolicy is an allow list. You never write "block X". You pick Pods, and anything you don't allow for them is blocked. If two policies select the same Pod, it accepts what either one allows.</p>
+
+<h2>2. Read one, line by line</h2>
+<p>This policy lets Pods labelled <code>app=web</code> accept traffic only from Pods labelled <code>app=frontend</code>, on TCP port 8080:</p>
+<pre><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: web-allow
+spec:
+  podSelector:            # WHICH Pods this policy protects
+    matchLabels:
+      app: web
+  policyTypes:
+  - Ingress               # it controls incoming traffic
+  ingress:                # list of allow rules
+  - from:                 # rule 1: WHO may connect
+    - podSelector:
+        matchLabels:
+          app: frontend
+    ports:                # rule 1: ON WHICH port
+    - protocol: TCP
+      port: 8080</code></pre>
+<p>Read it as two questions. <code>spec.podSelector</code> answers "who is protected?". Each item under <code>ingress</code> answers "who may come in, and on which ports?". A <code>podSelector</code> inside <code>from</code> matches Pods in the policy's own namespace.</p>
+<p>Two shapes to recognise:</p>
+<ul>
+<li><code>podSelector: {}</code> selects every Pod in the namespace.</li>
+<li><code>policyTypes: [Ingress]</code> with no <code>ingress</code> list allows nothing in. That is the "default deny" policy.</li>
+</ul>
+
+<h2>3. The trap: one dash or two</h2>
+<p>Inside <code>from</code>, each dash starts a separate source, and the sources are OR-ed. Two selectors under one dash are AND-ed.</p>
+<pre><code># OR: Pods labelled app=frontend in this namespace,
+#     OR any Pod in namespaces labelled team=a
+  - from:
+    - podSelector: {matchLabels: {app: frontend}}
+    - namespaceSelector: {matchLabels: {team: a}}
+
+# AND: Pods labelled app=frontend that are in namespaces labelled team=a
+  - from:
+    - podSelector: {matchLabels: {app: frontend}}
+      namespaceSelector: {matchLabels: {team: a}}</code></pre>
+<p>The only difference is the dash before <code>namespaceSelector</code>. Exam tasks test this.</p>
+
+<h2>4. How to write one fast</h2>
+<p><code>kubectl create</code> has no NetworkPolicy generator, so copy the example from the docs. Open <a href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">Network Policies</a> and copy the "test-network-policy" YAML (search the page for <code>test-network-policy</code>). Delete what you don't need: <code>egress</code>, <code>ipBlock</code>, <code>namespaceSelector</code>.</p>
+<ol>
+<li>Look at the labels first: <code>k get pods --show-labels</code>.</li>
+<li>Paste the docs example into <code>np.yaml</code>, then trim it and fix the names, labels and port.</li>
+<li><code>k apply -f np.yaml</code>, then <code>k describe netpol &lt;name&gt;</code>. The describe output says in plain English who is allowed in.</li>
+</ol>
+<p>Your Docker Desktop cluster does not enforce NetworkPolicies, so traffic tests won't prove anything here. Trust <code>describe</code> and the checker.</p>
+
+<h2>5. Check yourself</h2>
+<div class="quiz" data-answer="1" data-explain="A policy only affects the Pods its spec.podSelector selects. other stays open.">
+<p>A policy selects <code>app=db</code> and allows ingress only from <code>app=api</code>. Can <code>app=other</code> still receive traffic from anyone?</p>
+<button>No, the policy blocks everything in the namespace</button>
+<button>Yes, no policy selects it</button>
+<button>Only from app=api</button>
+</div>
+
+<div class="quiz" data-answer="2" data-explain="An empty podSelector selects every Pod, and no ingress rules means nothing is allowed in.">
+<p>What does this policy do? <code>podSelector: {}</code>, <code>policyTypes: [Ingress]</code>, no <code>ingress</code> field.</p>
+<button>Nothing, it has no rules</button>
+<button>Allows all incoming traffic</button>
+<button>Blocks all incoming traffic to every Pod in the namespace</button>
+</div>
+
+<div class="quiz" data-answer="0" data-explain="Two dashes are two sources, OR-ed. One dash with both selectors would mean AND.">
+<p>Under <code>from</code>: <code>- podSelector: {app: api}</code> and <code>- namespaceSelector: {team: a}</code>, each with its own dash. Who may connect?</p>
+<button>app=api Pods here, OR any Pod in a team=a namespace</button>
+<button>Only app=api Pods inside team=a namespaces</button>
+<button>Nobody, the selectors conflict</button>
+</div>
+
+<h2>6. The sidecar you missed</h2>
+<p>Two separate mistakes broke <code>native-sidecar</code>.</p>
+<p><strong>A shell loop needs a shell.</strong> <code>while true; do ...; done</code> is shell syntax, not a program. Give the container <code>command: ["sh", "-c", "while true; do ...; done"]</code>. With <code>kubectl run</code>, the end of the line is <code>--command -- sh -c '...'</code>. If the container is in <code>CrashLoopBackOff</code>, <code>k logs &lt;pod&gt; -c &lt;container&gt;</code> and <code>k describe pod</code> tell you why.</p>
+<p><strong>A native sidecar is an init container with <code>restartPolicy: Always</code>.</strong> A second entry under <code>containers</code> is an ordinary container. It has no start order and no sidecar behaviour. The native sidecar goes under <code>initContainers</code>:</p>
+<pre><code>spec:
+  initContainers:
+  - name: shipper
+    image: busybox:1.36
+    restartPolicy: Always    # this line makes it a sidecar
+    command: [...]
+  containers:
+  - name: main
+    ...</code></pre>
+<p>It starts before the main containers and runs until the Pod stops. The docs page is <a href="https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/">Sidecar containers</a>.</p>
+
+<h2>7. Retry now</h2>
+<pre><code>./drill run retry-01</code></pre>
+<p>The set holds <code>netpol-ingress</code> (6 min) and <code>native-sidecar</code> (7 min). Each task starts from a fresh namespace.</p>
+
+<nav class="course">
+Previous: <a href="0001-generate-dont-type.html">Lesson 1: Generate, don't type</a>
+&middot; Reference: <a href="../reference/kubectl-generators.html">kubectl generators</a>
+</nav>
+</main>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

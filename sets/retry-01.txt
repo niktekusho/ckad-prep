@@ -1,0 +1,3 @@
+# Retry of the two diag-01 misses, after lesson 0002. About 13 minutes of budget.
+netpol-ingress
+native-sidecar
