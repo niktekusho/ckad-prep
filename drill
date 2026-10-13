@@ -13,10 +13,13 @@ ask()   { read -rp "$1" REPLY; }
 check() { NS=$1 bash "$ROOT/tasks/$1/check.sh"; }
 
 # drill deletes namespaces, so it must never touch a real cluster.
+# k3s names its context "default", which says nothing, so match its local API server address instead.
 local_only() {
   ctx=$(kubectl config current-context 2>/dev/null)
+  server=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}' 2>/dev/null)
   [ "$ctx" = docker-desktop ] && return
-  echo "kubectl points at '$ctx', not docker-desktop. Run: kubectl config use-context docker-desktop" >&2; exit 1
+  [ "$server" = https://127.0.0.1:6443 ] && return
+  echo "kubectl points at '$ctx' ($server), not docker-desktop or a local k3s. Switch to one of them." >&2; exit 1
 }
 
 # Each task gets a fresh namespace named after the task.

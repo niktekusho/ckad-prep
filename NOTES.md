@@ -5,13 +5,12 @@
 - Track weak domains and time per task (`progress/log.csv`, `./drill stats`) and adapt each session.
 - A 2-hour mock at the end of each week (Saturday by default).
 
-## Environment (this machine)
-- Docker Desktop 4.32, kubeadm provisioner, Kubernetes v1.29.2, single node. No admin rights, so no upgrade.
-- WSL (kubectl v1.31 client). It shares the Windows kubeconfig, which also holds work clusters (OpenShift, GKE prod). `drill` checks for the `docker-desktop` context.
-- WSL is older than 2.5.1 (kernel 5.15.153) and `wsl --update` needs admin. In hybrid cgroup mode the kubelet fails with `cgroup ["kubepods"] has some missing paths`. `%USERPROFILE%\.wslconfig` forces cgroup v2: `kernelCommandLine = cgroup_no_v1=all systemd.unified_cgroup_hierarchy=1`.
-- helm is not installed in WSL yet (needed for session 2). Kustomize is built into kubectl (`kubectl apply -k`).
-- No ingress controller and no NetworkPolicy enforcement. Tasks check the object spec only.
-- Avoid features newer than v1.29 in local tasks. Mention them in lessons when the exam (v1.37) differs.
+## Writing tasks for every machine
+`docs/setup.md` describes the three practice clusters. Tasks must pass on all of them:
+- Avoid features newer than v1.29, the work PC's version. Mention them in lessons when the exam (v1.37) differs.
+- Ingress and NetworkPolicy checks test the object spec, because the work PC enforces neither.
+- Keep `drill` and `check.sh` working on macOS bash 3.2 and BSD tools: no `sed -i`, `grep -P`, `date -d`, `declare -A`.
+- Kustomize is built into kubectl (`kubectl apply -k`), so it needs no install.
 
 ## How sessions work
 - Session N: read `./drill stats` and `progress/log.csv`, write the next `sets/*.txt`, weighting weak domains

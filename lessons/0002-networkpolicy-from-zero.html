@@ -63,7 +63,7 @@ spec:
 <li>Paste the docs example into <code>np.yaml</code>, then trim it and fix the names, labels and port.</li>
 <li><code>k apply -f np.yaml</code>, then <code>k describe netpol &lt;name&gt;</code>. The describe output says in plain English who is allowed in.</li>
 </ol>
-<p>Your Docker Desktop cluster does not enforce NetworkPolicies, so traffic tests won't prove anything here. Trust <code>describe</code> and the checker.</p>
+<p>A traffic test proves something only on a cluster that enforces NetworkPolicies (see the table in <code>docs/setup.md</code>). Elsewhere, trust <code>describe</code> and the checker. To test, use a throwaway Pod: <code>k run t --rm -it --image=busybox -l &lt;labels&gt; -- wget -qO- -T 2 &lt;service&gt;</code>.</p>
 
 <h2>5. Check yourself</h2>
 <div class="quiz" data-answer="1" data-explain="A policy only affects the Pods its spec.podSelector selects. other stays open.">

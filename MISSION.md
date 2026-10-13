@@ -10,8 +10,7 @@ Pass the Certified Kubernetes Application Developer exam in early November 2026 
 
 ## Constraints
 - About 1 hour per weekday, plus one 2-hour mock at the end of each week.
-- Practice cluster is Docker Desktop's Kubernetes v1.29 (no admin rights to upgrade). The exam runs v1.37.
-- This cluster has no ingress controller and does not enforce NetworkPolicies. Tasks check the object spec.
+- The oldest practice cluster runs Kubernetes v1.29 and the exam runs v1.37 (`docs/setup.md`).
 - Allowed during the exam: kubernetes.io/docs, kubernetes.io/blog, helm.sh/docs.
 
 ## Out of scope
