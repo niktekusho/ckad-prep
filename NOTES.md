@@ -8,6 +8,7 @@
 ## Environment (this machine)
 - Docker Desktop 4.32, kubeadm provisioner, Kubernetes v1.29.2, single node. No admin rights, so no upgrade.
 - WSL (kubectl v1.31 client). It shares the Windows kubeconfig, which also holds work clusters (OpenShift, GKE prod). `drill` checks for the `docker-desktop` context.
+- WSL is older than 2.5.1 (kernel 5.15.153) and `wsl --update` needs admin. In hybrid cgroup mode the kubelet fails with `cgroup ["kubepods"] has some missing paths`. `%USERPROFILE%\.wslconfig` forces cgroup v2: `kernelCommandLine = cgroup_no_v1=all systemd.unified_cgroup_hierarchy=1`.
 - helm is not installed in WSL yet (needed for session 2). Kustomize is built into kubectl (`kubectl apply -k`).
 - No ingress controller and no NetworkPolicy enforcement. Tasks check the object spec only.
 - Avoid features newer than v1.29 in local tasks. Mention them in lessons when the exam (v1.37) differs.
