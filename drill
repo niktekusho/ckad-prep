@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# CKAD drill runner. Usage: ./drill [today] | ./drill run <set> | ./drill mock <set> | ./drill stats | ./drill reset
+# CKAD drill runner. Usage: ./drill [today] | ./drill run <set> | ./drill mock <set> | ./drill stats | ./drill clean
 set -u
 ROOT=$(cd "$(dirname "$0")" && pwd)
 LOG=$ROOT/progress/log.csv
@@ -111,14 +111,22 @@ today() {
   [ -z "$mock" ] || echo "Mock pending: $mock (./drill mock $mock, 120 min)"
 }
 
+# Helm releases live in the task namespaces, so deleting those removes them too.
+clean() {
+  kubectl delete ns -l ckad-drill=1
+  for d in "$ROOT"/tasks/*/; do rm -rf "$HOME/ckad/$(basename "$d")"; done
+}
+
 case ${1:-} in
   ''|today) today; echo; sed -n '2p' "$0" ;;
   run|mock) local_only
     # Emptied, not deleted: a terminal already inside workdir keeps a valid directory.
     mkdir -p "$ROOT/workdir" && find "$ROOT/workdir" -mindepth 1 -delete
     echo "workdir is empty. Open a second terminal in $ROOT/workdir and keep your files there (git ignores it)."
-    "$1" "$2" ;;
+    "$1" "$2"
+    ask "Delete the drill namespaces and ~/ckad task folders? [y/N] "
+    [ "$REPLY" = y ] && clean ;;
   stats) stats ;;
-  reset) local_only; kubectl delete ns -l ckad-drill=1 ;;
+  clean) local_only; clean ;;
   *) sed -n '2p' "$0" ;;
 esac
