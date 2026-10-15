@@ -10,3 +10,5 @@ date,mode,set,task,domain,budget_min,secs,result
 2026-10-13,run,diag-01,svc-fix,networking,5,409,pass
 2026-10-13,run,diag-01,netpol-ingress,networking,6,12,skip
 2026-10-13,run,diag-01,ingress-paths,networking,6,260,pass
+2026-10-15,run,retry-01,netpol-ingress,networking,6,434,pass
+2026-10-15,run,retry-01,native-sidecar,design-build,7,564,pass
