@@ -1,7 +1,7 @@
 # Notes
 
 ## Preferences
-- Terminal-only tasks: `kubectl`, `vim`, kubernetes.io docs. Timed. About 1 hour per weekday.
+- Terminal-only tasks: `kubectl`, `nano`, kubernetes.io docs. Timed. About 1 hour per weekday.
 - Track weak domains and time per task (`progress/log.csv`, `./drill stats`) and adapt each session.
 - A 2-hour mock at the end of each week (Saturday by default).
 

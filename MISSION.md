@@ -5,7 +5,7 @@ Pass the Certified Kubernetes Application Developer exam in early November 2026 
 
 ## Success looks like
 - Finish a 2-hour mock of about 16 tasks with 75% or more, leaving time to review.
-- Solve a typical task within its time budget using only `kubectl`, `vim` and kubernetes.io/docs.
+- Solve a typical task within its time budget using only `kubectl`, `nano` and kubernetes.io/docs.
 - No domain below a 70% pass rate in `./drill stats`.
 
 ## Constraints

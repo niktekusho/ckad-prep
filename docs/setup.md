@@ -1,6 +1,6 @@
 # Practice cluster setup
 
-`drill` deletes namespaces, so it refuses to run unless kubectl points at a local cluster: the context `docker-desktop`, or an API server at `https://127.0.0.1:6443` (k3s and k3d). Every setup also needs `kubectl`, `vim` and `helm`.
+`drill` deletes namespaces, so it refuses to run unless kubectl points at a local cluster: the context `docker-desktop`, or an API server at `https://127.0.0.1:6443` (k3s and k3d). Every setup also needs `kubectl`, `nano` and `helm`.
 
 | Machine | Cluster | Ingress controller | NetworkPolicy enforced |
 |---|---|---|---|
@@ -32,7 +32,6 @@ Repo at `/mnt/c/Users/Nicola/projects/ckad-prep`, used from WSL Ubuntu.
 curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
 mkdir -p ~/.kube && cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 kubectl get nodes        # one node, Ready
-sudo apt install -y vim
 ```
 
 The installer also puts `kubectl` in `/usr/local/bin`. Install helm with the script from helm.sh.

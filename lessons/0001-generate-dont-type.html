@@ -18,14 +18,16 @@
 <pre><code>alias k=kubectl
 source &lt;(kubectl completion bash)
 complete -o default -F __start_kubectl k
-export do="--dry-run=client -o yaml"</code></pre>
-<p>The exam terminal already has the <code>k</code> alias and completion (<a href="https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad">LF exam tips</a>). The alias and completion lines come from the <a href="https://kubernetes.io/docs/reference/kubectl/quick-reference/">kubectl quick reference</a>, which is an allowed docs page. On exam day, type only the <code>export do=...</code> line.</p>
-<p>Add this line to <code>~/.vimrc</code> so a Tab in YAML becomes two spaces:</p>
-<pre><code>set expandtab tabstop=2 shiftwidth=2</code></pre>
+export do="--dry-run=client -o yaml"
+export KUBE_EDITOR=nano</code></pre>
+<p>The exam terminal already has the <code>k</code> alias and completion (<a href="https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad">LF exam tips</a>). The alias and completion lines come from the <a href="https://kubernetes.io/docs/reference/kubectl/quick-reference/">kubectl quick reference</a>, which is an allowed docs page. On exam day, type only the two <code>export</code> lines. Without <code>KUBE_EDITOR</code>, <code>kubectl edit</code> opens vi.</p>
+<p>Add these lines to <code>~/.nanorc</code>. YAML rejects tab characters, so a Tab must insert two spaces:</p>
+<pre><code>set tabstospaces
+set tabsize 2</code></pre>
 
 <h2>2. The loop</h2>
 <pre><code>k create deploy web --image=nginx:1.27 --replicas=3 $do &gt; web.yaml
-vim web.yaml          # add the fields kubectl can't generate
+nano web.yaml         # add the fields kubectl can't generate
 k apply -f web.yaml</code></pre>
 <p><code>--dry-run=client</code> builds the object without sending it to the cluster. <code>-o yaml</code> prints it. For a field you can't remember, ask the API directly instead of searching:</p>
 <pre><code>k explain pod.spec.containers.securityContext
@@ -41,7 +43,7 @@ k explain deploy.spec.strategy.rollingUpdate</code></pre>
 <button>k run deploy web --image=nginx $do</button>
 </div>
 
-<div class="quiz" data-answer="1" data-explain="Probes have no create flag. Add them in vim or copy them from the docs.">
+<div class="quiz" data-answer="1" data-explain="Probes have no create flag. Add them in nano or copy them from the docs.">
 <p>Which part of a Deployment can't <code>k create deploy</code> set from a flag?</p>
 <button>spec.replicas</button>
 <button>readinessProbe</button>
