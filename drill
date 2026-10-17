@@ -79,7 +79,11 @@ stats() {
 }
 
 case ${1:-} in
-  run|mock) local_only; "$1" "$2" ;;
+  run|mock) local_only
+    # Emptied, not deleted: a terminal already inside workdir keeps a valid directory.
+    mkdir -p "$ROOT/workdir" && find "$ROOT/workdir" -mindepth 1 -delete
+    echo "workdir is empty. Open a second terminal in $ROOT/workdir and keep your files there (git ignores it)."
+    "$1" "$2" ;;
   stats) stats ;;
   reset) local_only; kubectl delete ns -l ckad-drill=1 ;;
   *) sed -n '2p' "$0" ;;

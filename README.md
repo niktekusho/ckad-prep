@@ -11,7 +11,7 @@ Run everything from a Linux or macOS shell in the repo root, against a local clu
 ./drill reset           # delete every drill namespace
 ```
 
-Each task runs in a fresh namespace named after the task. Results go to `progress/log.csv`.
+Each task runs in a fresh namespace named after the task. Keep your YAML in `workdir/`, which git ignores, so your solutions stay out of the repo. `run` and `mock` empty it first, so no old solution carries over. Results go to `progress/log.csv`.
 
 ## A weekday session (about 1 hour)
 
