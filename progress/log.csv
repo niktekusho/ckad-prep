@@ -12,3 +12,10 @@ date,mode,set,task,domain,budget_min,secs,result
 2026-10-13,run,diag-01,ingress-paths,networking,6,260,pass
 2026-10-15,run,retry-01,netpol-ingress,networking,6,434,pass
 2026-10-15,run,retry-01,native-sidecar,design-build,7,564,pass
+2026-10-17,run,session-02,helm-install,deployment,5,123,pass
+2026-10-17,run,session-02,netpol-ns,networking,6,414,pass
+2026-10-17,run,session-02,kustomize-overlay,deployment,8,461,pass
+2026-10-17,run,session-02,pod-security,config-security,7,527,pass
+2026-10-17,run,session-02,helm-rollback,deployment,6,79,pass
+2026-10-17,run,session-02,sidecar-deploy,design-build,7,485,pass
+2026-10-17,run,session-02,config-env,config-security,6,502,pass
