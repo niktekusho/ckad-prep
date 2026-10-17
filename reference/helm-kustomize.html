@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Helm and Kustomize</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+<h1>Helm and Kustomize</h1>
+<p class="subtitle">Every helm command takes <code>-n &lt;ns&gt;</code>. Docs: <a href="https://helm.sh/docs/helm/">helm.sh/docs/helm</a>, <a href="https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/">kubernetes.io Kustomize</a>.</p>
+
+<h2>Helm</h2>
+<div class="table-wrap"><table>
+<tr><th>Goal</th><th>Command</th></tr>
+<tr><td>Add a repo, find a chart</td><td><code>helm repo add b &lt;url&gt;</code> &middot; <code>helm repo update</code> &middot; <code>helm search repo b/</code></td></tr>
+<tr><td>See settable values</td><td><code>helm show values &lt;chart&gt;</code></td></tr>
+<tr><td>Install</td><td><code>helm install &lt;rel&gt; &lt;chart&gt; --set k=v</code> or <code>-f vals.yaml</code></td></tr>
+<tr><td>Find releases</td><td><code>helm list -A</code></td></tr>
+<tr><td>Values a release uses</td><td><code>helm get values &lt;rel&gt;</code></td></tr>
+<tr><td>Upgrade</td><td><code>helm upgrade &lt;rel&gt; &lt;chart&gt; --set k=v</code></td></tr>
+<tr><td>Revisions</td><td><code>helm history &lt;rel&gt;</code></td></tr>
+<tr><td>Roll back</td><td><code>helm rollback &lt;rel&gt; [rev]</code> (no rev = previous; adds a new revision)</td></tr>
+<tr><td>Remove</td><td><code>helm uninstall &lt;rel&gt;</code></td></tr>
+<tr><td>Render without installing</td><td><code>helm template &lt;rel&gt; &lt;chart&gt; --set k=v</code></td></tr>
+</table></div>
+
+<h2>Kustomize overlay</h2>
+<pre><code>resources: [../base]
+namespace: prod
+namePrefix: prod-
+labels:
+- pairs: {env: prod}       # objects only; commonLabels also edits selectors
+images:
+- name: nginx
+  newTag: "1.27"
+patches:
+- patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata: {name: web}  # base name, without prefix
+    spec: {replicas: 3}</code></pre>
+<div class="table-wrap"><table>
+<tr><td>Preview</td><td><code>kubectl kustomize &lt;dir&gt;</code></td></tr>
+<tr><td>Apply</td><td><code>kubectl apply -k &lt;dir&gt;</code></td></tr>
+<tr><td>Delete</td><td><code>kubectl delete -k &lt;dir&gt;</code></td></tr>
+</table></div>
+</main>
+</body>
+</html>

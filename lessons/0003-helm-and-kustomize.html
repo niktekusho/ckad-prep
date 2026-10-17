@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Helm and Kustomize</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+<h1>Helm and Kustomize</h1>
+<p class="subtitle">Lesson 3 of your CKAD prep. About 10 minutes, then run session-02.</p>
+
+<h2>1. Two ways to avoid copying YAML</h2>
+<p>Both tools turn one set of YAML into many variants. They differ in how:</p>
+<ul>
+<li><strong>Helm</strong> fills in a template. A <em>chart</em> is a folder of templates with default <em>values</em>. Installing a chart creates a <em>release</em>, and every install, upgrade or rollback adds a numbered <em>revision</em> to that release.</li>
+<li><strong>Kustomize</strong> edits plain YAML. A <em>base</em> is ordinary manifests plus a <code>kustomization.yaml</code>. An <em>overlay</em> is another <code>kustomization.yaml</code> that points at the base and lists changes. It is built into kubectl.</li>
+</ul>
+<p>The exam lets you open <a href="https://helm.sh/docs/">helm.sh/docs</a> as well as kubernetes.io.</p>
+
+<h2>2. Helm: the release lifecycle</h2>
+<pre><code>helm show values ./chart                  # what can I set?
+helm install shop ./chart --set replicaCount=2 --set image.tag=1.27
+helm install shop ./chart -f my-values.yaml  # same, from a file
+helm list -A                              # every release, every namespace
+helm upgrade shop ./chart --set image.tag=1.28
+helm history shop                         # revisions and what each did
+helm rollback shop 1                      # no number = the previous revision
+helm uninstall shop</code></pre>
+<p>Every command works on the current namespace. Add <code>-n &lt;ns&gt;</code> as you would with kubectl. Release names are only unique within a namespace, so <code>helm list</code> without <code>-A</code> can miss the one you are looking for.</p>
+<p>A rollback doesn't delete the bad revision. It adds a new revision that copies the old one, so after rolling back from 2 to 1, <code>helm history</code> shows revision 3 with the description <code>Rollback to 1</code>.</p>
+<p>On the exam the chart usually comes from a repository: <code>helm repo add &lt;name&gt; &lt;url&gt;</code>, <code>helm repo update</code>, <code>helm search repo &lt;name&gt;</code>, then <code>helm install &lt;release&gt; &lt;name&gt;/&lt;chart&gt;</code>. Your practice tasks use the local chart <code>charts/web</code>, so they work offline.</p>
+
+<h2>3. Kustomize: base and overlay</h2>
+<pre><code>prod/kustomization.yaml
+resources:
+- ../base               # the base folder, not a file
+namespace: prod
+namePrefix: prod-       # web becomes prod-web
+labels:
+- pairs:
+    env: prod
+images:
+- name: nginx           # the image name in the base
+  newTag: "1.27"
+patches:                # anything else: a partial object
+- patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: web         # the name in the base, before the prefix
+    spec:
+      replicas: 3</code></pre>
+<p>Preview with <code>kubectl kustomize prod/</code>, then apply with <code>kubectl apply -k prod/</code>. Previewing first catches most mistakes, because the output is the exact YAML that will be applied.</p>
+<p>Two field notes. <code>labels</code> adds labels to the objects but leaves selectors alone. <code>commonLabels</code> also rewrites selectors, which breaks an existing Deployment, because its selector can't be changed. In a patch, name the object as the base names it, without the prefix.</p>
+<p>The docs page is <a href="https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/">Declarative Management of Kubernetes Objects Using Kustomize</a>. Search it for <code>Bases and Overlays</code> and for the field table.</p>
+
+<h2>4. Check yourself</h2>
+<div class="quiz" data-answer="2" data-explain="Rollback adds a new revision that copies revision 1. Nothing is deleted.">
+<p>Release <code>api</code> has revisions 1 and 2. You run <code>helm rollback api</code>. What does <code>helm history api</code> show now?</p>
+<button>Only revision 1, revision 2 is gone</button>
+<button>Revisions 1 and 2, 1 now deployed</button>
+<button>Revisions 1 to 3, 3 copies revision 1</button>
+</div>
+
+<div class="quiz" data-answer="0" data-explain="Helm commands use the current namespace, like kubectl. -A lists every namespace.">
+<p><code>helm list</code> prints nothing, yet the task says release <code>web</code> exists. What first?</p>
+<button>Run helm list -A to search all namespaces</button>
+<button>Run helm repo update to refresh the charts</button>
+<button>Run helm history web to see its revisions</button>
+</div>
+
+<div class="quiz" data-answer="1" data-explain="Patches match the object as the base names it. The prefix is applied afterwards.">
+<p>The overlay has <code>namePrefix: prod-</code> and a patch for the base Deployment <code>web</code>. Which name goes in the patch?</p>
+<button>prod-web, the name after the prefix</button>
+<button>web, the name used in the base</button>
+<button>Either, kustomize matches them both</button>
+</div>
+
+<h2>5. Run session 2</h2>
+<pre><code>./drill run session-02</code></pre>
+<p>Seven tasks, about 45 minutes of budget. They mix the new tools with a NetworkPolicy that needs the AND form from <a href="0002-networkpolicy-from-zero.html">lesson 2</a>, a native sidecar inside a Deployment, and two config and security tasks you passed slowly in diag-01. Aim to finish those two within budget.</p>
+<p>The Kustomize task writes its files to <code>/tmp/ckad/kz</code>. Helm isn't installed on the work PC yet, so run this set at home or on the MacBook.</p>
+
+<p class="callout"><strong>Primary source:</strong> <a href="https://helm.sh/docs/intro/using_helm/">Using Helm</a> on helm.sh, the page you can open during the exam. Read "helm install", "helm upgrade and helm rollback" and "Customizing the Chart Before Installing". If anything here is unclear, ask Claude.</p>
+
+<nav class="course">
+Previous: <a href="0002-networkpolicy-from-zero.html">Lesson 2: NetworkPolicy from zero</a>
+&middot; Reference: <a href="../reference/helm-kustomize.html">Helm and Kustomize</a>, <a href="../reference/kubectl-generators.html">kubectl generators</a>
+</nav>
+</main>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

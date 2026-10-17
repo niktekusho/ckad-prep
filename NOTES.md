@@ -18,12 +18,11 @@
 - Solutions stay out of the repo. After a session, review the failed tasks with the learner.
 
 ## Plan (exam not booked; assume about 4 weeks)
-- Week 1 (Oct 9-17): diag-01, then Helm + Kustomize, then weak domains. Mock 1 on Sat Oct 17.
+- Week 1 (Oct 9-18): diag-01, retry-01, session-02 (Helm + Kustomize) on Oct 17. Mock 1 moved to Sun Oct 18.
 - Week 2 (Oct 19-24): weak domains, speed. Mock 2 on Sat Oct 24.
 - Week 3 (Oct 26-31): killer.sh session 1. Mock 3 on Sat Oct 31.
 - Week 4: killer.sh session 2, light review. Mock 4 a few days before the exam.
 
 ## Backlog of topics not in diag-01
-Helm (install/upgrade/rollback, values), Kustomize, Jobs (completions/parallelism), PVC volumes, Role/RoleBinding,
-ResourceQuota/LimitRange, CRDs (`kubectl get crd`, using a custom resource), API deprecations (`kubectl convert` not
-available, read the deprecation guide), `kubectl top`/events/logs, blue/green with Service selector swap, docker image build.
+CRDs (`kubectl get crd`, using a custom resource), API deprecations (`kubectl convert` not
+available, read the deprecation guide), `kubectl top`/events, docker image build.

@@ -12,6 +12,10 @@
   kubernetes.io/docs, kubernetes.io/blog and helm.sh/docs only. Use for: knowing which docs pages to practice finding.
 - [kubectl quick reference - kubernetes.io](https://kubernetes.io/docs/reference/kubectl/quick-reference/)
   Alias, completion, and the imperative commands. Use for: speed habits. This is the primary source for lesson 0001.
+- [Using Helm - helm.sh](https://helm.sh/docs/intro/using_helm/)
+  Install, upgrade, rollback, values, repos. Allowed during the exam. Use for: Helm tasks. Primary source for lesson 0003.
+- [Kustomize task page - kubernetes.io](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/)
+  Field table, bases and overlays, `kubectl apply -k`. Use for: Kustomize tasks.
 - [kubernetes.io Tasks section](https://kubernetes.io/docs/tasks/)
   Copy-ready YAML for probes, security contexts, ConfigMaps, and more. Use for: anything `kubectl create` cannot generate.
 - [killer.sh CKAD simulator](https://killer.sh/ckad)

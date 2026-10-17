@@ -27,3 +27,4 @@ On Saturday, run the week's mock instead: `./drill mock mock-0N` (120 minutes). 
 - `lessons/`, `reference/`: HTML lessons and printable cheat sheets.
 - `tasks/<id>/`: `task.md` (domain, budget in minutes, text), optional `setup.sh`, and `check.sh`.
 - `sets/*.txt`: task lists for a session or a mock.
+- `charts/`: local Helm charts that tasks install, so Helm tasks work offline.
