@@ -2,12 +2,6 @@
 
 `drill` deletes namespaces, so it refuses to run unless kubectl points at a local cluster: the context `docker-desktop`, or an API server at `https://127.0.0.1:6443` (k3s and k3d). Every setup also needs `kubectl`, `nano` and `helm`.
 
-| Machine | Cluster | Ingress controller | NetworkPolicy enforced |
-|---|---|---|---|
-| Work PC (Windows, no admin) | Docker Desktop 4.32, Kubernetes v1.29.2 | no | no |
-| Home PC (Windows, admin) | k3s in WSL Ubuntu | Traefik | yes |
-| MacBook | k3d (k3s in Docker Desktop) | Traefik | yes |
-
 ## Work PC: Docker Desktop
 
 Repo at `/mnt/c/Projects/Workspace/github/ckad-prep`, used from WSL. Without admin rights, neither Docker Desktop nor WSL can be upgraded.
@@ -45,7 +39,7 @@ k3d runs k3s inside Docker containers, so the Mac gets the same cluster as the h
 
 ```bash
 brew install k3d kubectl helm
-k3d cluster create ckad --api-port 127.0.0.1:6443 -p "8080:80@loadbalancer"
+k3d cluster create ckad --api-port 127.0.0.1:6443 -p "2000:80@loadbalancer"
 kubectl config view --minify | grep server   # must be https://127.0.0.1:6443
 kubectl get nodes
 ```
@@ -70,3 +64,11 @@ EOF
 kubectl -n np-test run t --rm -it --image=busybox --restart=Never -- wget -qO- -T 2 web   # times out
 kubectl delete ns np-test
 ```
+
+Updated on 17/10/2026
+
+| Machine     | NetworkPolicy enforcement |
+| ----------- | ------------------------- |
+| work-laptop | ❌                        |
+| home PC     | ✅                        |
+| macbook     | ✅                        |
