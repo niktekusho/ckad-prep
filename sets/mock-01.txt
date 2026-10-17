@@ -1,0 +1,17 @@
+# Mock 1: 16 tasks, 90 minutes of budget in 120. Six new tasks cover backlog topics (Job, PVC, RBAC, quota, blue/green, previous logs).
+cronjob-basic
+job-parallel
+pvc-mount
+rolling-update
+blue-green
+helm-install
+kustomize-overlay
+probes
+debug-deploy
+logs-previous
+pod-security
+rbac-role
+quota-limits
+svc-fix
+ingress-paths
+netpol-ingress
