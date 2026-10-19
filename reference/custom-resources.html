@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Custom resources</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+<h1>Custom resources</h1>
+<p class="subtitle">Docs: <a href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">kubernetes.io CRDs</a>.</p>
+
+<div class="table-wrap"><table>
+<tr><th>Goal</th><th>Command</th></tr>
+<tr><td>List CRDs</td><td><code>kubectl get crd</code></td></tr>
+<tr><td>Kind, group, short name, scope</td><td><code>kubectl api-resources | grep -i &lt;word&gt;</code></td></tr>
+<tr><td>Fields and required ones</td><td><code>kubectl explain &lt;kind&gt;.spec</code></td></tr>
+<tr><td>Full schema</td><td><code>kubectl get crd &lt;plural&gt;.&lt;group&gt; -o yaml</code></td></tr>
+<tr><td>List objects</td><td><code>kubectl get &lt;plural|singular|short&gt; -n &lt;ns&gt;</code></td></tr>
+<tr><td>Only names</td><td><code>kubectl get &lt;kind&gt; -o name</code> (prefix is <code>kind.group/</code>)</td></tr>
+</table></div>
+
+<h2>Object skeleton</h2>
+<pre><code>apiVersion: &lt;group&gt;/&lt;version&gt;
+kind: &lt;Kind&gt;
+metadata:
+  name: x
+spec:
+  &lt;fields from kubectl explain&gt;</code></pre>
+<p>Cluster-scoped kinds ignore <code>-n</code>. An operator only reacts to objects. Without one, a CR is stored data.</p>
+</main>
+</body>
+</html>

@@ -22,7 +22,8 @@
 
 ## Plan (exam not booked; assume about 4 weeks)
 - Week 1 (Oct 9-18): diag-01, retry-01, session-02 (Helm + Kustomize) on Oct 17. Mock 1 moved to Sun Oct 18.
-- Week 2 (Oct 19-24): weak domains, speed. Mock 2 on Sat Oct 24.
+- Mock 1 (Oct 18) was not run: it is still pending, so run it Sat Oct 24 and let it set week 3.
+- Week 2 (Oct 19-24): session-03 on Oct 19 (CRDs, Kustomize from the docs, config/security speed).
 - Week 3 (Oct 26-31): killer.sh session 1. Mock 3 on Sat Oct 31.
 - Week 4: killer.sh session 2, light review. Mock 4 a few days before the exam.
 

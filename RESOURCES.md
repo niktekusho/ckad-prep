@@ -16,6 +16,8 @@
   Install, upgrade, rollback, values, repos. Allowed during the exam. Use for: Helm tasks. Primary source for lesson 0003.
 - [Kustomize task page - kubernetes.io](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/)
   Field table, bases and overlays, `kubectl apply -k`. Use for: Kustomize tasks.
+- [CustomResourceDefinitions task - kubernetes.io](https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/)
+  CRD YAML, creating and listing custom objects. Use for: CRD tasks. Primary source for lesson 0004.
 - [kubernetes.io Tasks section](https://kubernetes.io/docs/tasks/)
   Copy-ready YAML for probes, security contexts, ConfigMaps, and more. Use for: anything `kubectl create` cannot generate.
 - [killer.sh CKAD simulator](https://killer.sh/ckad)

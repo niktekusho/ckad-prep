@@ -1,0 +1,8 @@
+# Session 3: custom resources and Kustomize from the docs, plus repeats of the slow config/security, sidecar and NetworkPolicy tasks. About 41 minutes of budget.
+# lesson: lessons/0004-custom-resources.html
+crd-use
+kustomize-generator
+pod-security
+native-sidecar
+netpol-ingress
+config-env

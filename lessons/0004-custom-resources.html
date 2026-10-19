@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Custom resources</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+<h1>Custom resources</h1>
+<p class="subtitle">Lesson 4 of your CKAD prep. About 10 minutes, then run session-03.</p>
+
+<h2>1. Why it is on the exam</h2>
+<p>The curriculum lists "Discover and use resources that extend Kubernetes (CRD, Operators)" under Application Environment, Configuration and Security (<a href="https://github.com/cncf/curriculum">CNCF curriculum</a>). That is your slowest domain, so this is a cheap place to win points. A task gives you a CRD that already exists and asks you to find out what it offers and create an object from it.</p>
+
+<h2>2. The model</h2>
+<ul>
+<li>A <strong>CustomResourceDefinition</strong> (CRD) teaches the API server a new kind. Its name is <code>&lt;plural&gt;.&lt;group&gt;</code>.</li>
+<li>A <strong>custom resource</strong> (CR) is an object of that kind. You create it like any other object, with <code>kubectl apply</code>.</li>
+<li>An <strong>operator</strong> is a controller that watches CRs and acts on them. The exam only asks you to use CRs, so you never write one.</li>
+</ul>
+
+<h2>3. Discover, then use</h2>
+<pre><code>kubectl get crd                                 # every CRD in the cluster
+kubectl api-resources | grep -i backup          # kind, group, short name, namespaced?
+kubectl explain backup.spec                     # fields and which are required
+kubectl get crd backups.drill.example.com -o yaml   # full schema if explain is thin
+kubectl get backups -n crd-use                  # list objects (plural, singular or short name)</code></pre>
+<p>Then write the object. <code>apiVersion</code> is <code>&lt;group&gt;/&lt;version&gt;</code>, <code>kind</code> is the CRD's kind, and <code>spec</code> holds the fields from <code>explain</code>:</p>
+<pre><code>apiVersion: drill.example.com/v1
+kind: Backup
+metadata:
+  name: nightly
+spec:
+  schedule: "0 2 * * *"
+  target: db</code></pre>
+<p>Check <code>NAMESPACED</code> in <code>api-resources</code>. A cluster-scoped kind ignores <code>-n</code>. The CRD <code>required</code> list is enforced, so a missing field is rejected with a clear error.</p>
+<p>The docs page is <a href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Extend the Kubernetes API with CustomResourceDefinitions</a>. You will not write a CRD on the exam, but its example shows every field you will meet.</p>
+
+<h2>4. Check yourself</h2>
+<div class="quiz" data-answer="1" data-explain="Group and version come from the CRD, and kubectl api-resources prints them next to the kind.">
+<p>You need the <code>apiVersion</code> for a kind you have never seen. Which command shows it fastest?</p>
+<button>kubectl describe node for the control plane</button>
+<button>kubectl api-resources and grep the kind</button>
+<button>kubectl get events across all namespaces</button>
+</div>
+<div class="quiz" data-answer="2" data-explain="explain reads the CRD schema, including the required fields.">
+<p>The create is rejected for a missing field. Where do you find the field list?</p>
+<button>kubectl logs of the operator pod now</button>
+<button>kubectl top on the custom resource kind</button>
+<button>kubectl explain on the kind and its spec</button>
+</div>
+<div class="quiz" data-answer="0" data-explain="A CR needs no operator to exist. It is only data until a controller acts on it.">
+<p>No operator is installed. What happens when you create a custom resource?</p>
+<button>It is stored, and nothing acts on it</button>
+<button>The API server rejects it as unknown</button>
+<button>The object is created and then deleted</button>
+</div>
+
+<h2>5. Run session 3</h2>
+<pre><code>./drill run session-03</code></pre>
+<p>Six tasks, about 41 minutes of budget. <code>crd-use</code> is the new skill. <code>kustomize-generator</code> has no lesson: solve it from the Kustomize page on kubernetes.io, searching for <code>configMapGenerator</code>, to prove Kustomize without a copy. The rest repeat config and security tasks and the sidecar and NetworkPolicy tasks that ran over budget. Aim for time, not just a pass.</p>
+
+<p class="callout"><strong>Primary source:</strong> <a href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">CustomResourceDefinitions on kubernetes.io</a>. Read "Create a CustomResourceDefinition" and "Create custom objects". If anything here is unclear, ask Claude.</p>
+
+<nav class="course">
+Previous: <a href="0003-helm-and-kustomize.html">Lesson 3: Helm and Kustomize</a>
+&middot; Reference: <a href="../reference/custom-resources.html">Custom resources</a>
+</nav>
+</main>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>
