@@ -19,3 +19,4 @@ date,mode,set,task,domain,budget_min,secs,result
 2026-10-17,run,session-02,helm-rollback,deployment,6,79,pass
 2026-10-17,run,session-02,sidecar-deploy,design-build,7,485,pass
 2026-10-17,run,session-02,config-env,config-security,6,502,pass
+2026-10-19,run,session-03,crd-use,config-security,7,411,pass
