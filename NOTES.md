@@ -15,6 +15,9 @@
 ## How sessions work
 - Session N: read `./drill stats` and `progress/log.csv`, write the next `sets/*.txt`, weighting weak domains
   but interleaving every domain. Reuse old tasks for spaced repetition and add new ones under `tasks/`.
+- If a session has a lesson, put `# lesson: lessons/NNNN-<name>.html` as a comment line in its set. `./drill` prints it.
+- Name each review `learning-records/NNNN-<set>-review.md`. `./drill` treats a set with no such file as unreviewed.
+- Keep one pending set at a time. `./drill` picks the newest if there are several.
 - Solutions stay out of the repo. After a session, review the failed tasks with the learner.
 
 ## Plan (exam not booked; assume about 4 weeks)

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# CKAD drill runner. Usage: ./drill run <set> | ./drill mock <set> | ./drill stats | ./drill reset
+# CKAD drill runner. Usage: ./drill [today] | ./drill run <set> | ./drill mock <set> | ./drill stats | ./drill reset
 set -u
 ROOT=$(cd "$(dirname "$0")" && pwd)
 LOG=$ROOT/progress/log.csv
@@ -78,7 +78,38 @@ stats() {
           for (d in n) printf "%-18s %5d %5.0f%% %12s\n", d, n[d], 100*p[d]/n[d], c[d] ? sprintf("%.2f", t[d]/c[d]) : "-" }' "$LOG"
 }
 
+today() {
+  case $(date +%u) in 6|7) weekend=1 ;; *) weekend= ;; esac
+  review= run= mock=
+  for f in $(ls -t "$ROOT"/sets/*.txt); do
+    s=${f##*/}; s=${s%.txt}
+    n=$(( $(ids "$s" | wc -l) ))
+    got=$(( $(awk -F, -v s="$s" '$3==s{print $4}' "$LOG" | sort -u | wc -l) ))
+    if [ "$got" -lt "$n" ]; then
+      case $s in mock-*) mock=${mock:-$s} ;; *) run=${run:-$s} ;; esac
+    elif ! ls "$ROOT"/learning-records/*-"$s"-review.md >/dev/null 2>&1; then
+      review=${review:-$s}
+    fi
+  done
+  if [ -n "$review" ]; then
+    echo "Tell Claude you're done with $review, to review its failed and skipped tasks."
+  elif [ -n "$weekend" ] && [ -n "$mock" ]; then
+    echo "Run: ./drill mock $mock"; mock=
+  elif [ -n "$run" ]; then
+    lesson=$(sed -n 's/^# lesson: *//p' "$ROOT/sets/$run.txt" | head -1 | tr -d '\r')
+    if [ -n "$lesson" ] && [ -f "$ROOT/$lesson" ]; then
+      echo "Read $lesson first (10 min): http://localhost:8000/$lesson"
+      echo "Server: npx --yes serve@14.2.6 -l tcp://127.0.0.1:8000"
+    fi
+    echo "Run: ./drill run $run"
+  else
+    echo "Open Claude: /mattpocock-skills:teach next session"
+  fi
+  [ -z "$mock" ] || echo "Mock pending: $mock (./drill mock $mock, 120 min)"
+}
+
 case ${1:-} in
+  ''|today) today; echo; sed -n '2p' "$0" ;;
   run|mock) local_only
     # Emptied, not deleted: a terminal already inside workdir keeps a valid directory.
     mkdir -p "$ROOT/workdir" && find "$ROOT/workdir" -mindepth 1 -delete

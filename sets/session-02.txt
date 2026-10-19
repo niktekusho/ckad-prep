@@ -1,4 +1,5 @@
 # Session 2: Helm and Kustomize, interleaved with NetworkPolicy, sidecar and config/security repeats. About 45 minutes of budget.
+# lesson: lessons/0003-helm-and-kustomize.html
 helm-install
 netpol-ns
 kustomize-overlay
